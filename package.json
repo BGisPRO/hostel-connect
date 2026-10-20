@@ -1,0 +1,20 @@
+{
+  "name": "hbtu-ridepool",
+  "version": "1.0.0",
+  "description": "Smart Cab Pooling Network for Harcourt Butler Technical University (HBTU) Kanpur students",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 3000",
+    "dev": "python -m http.server 3000"
+  },
+  "keywords": [
+    "hbtu",
+    "cab-pool",
+    "ride-share",
+    "kanpur",
+    "hbtu-kanpur",
+    "carpool"
+  ],
+  "author": "HBTU Student Community",
+  "license": "MIT"
+}

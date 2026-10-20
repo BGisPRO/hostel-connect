@@ -1,89 +1,64 @@
-# ⚡ CYBER VIPER 2088 — Cyberpunk Neon Arcade Snake
+# 🚖 HBTU RidePool — Smart Cab Pooling & Booking Engine
 
-> An ultra-premium, high-octane browser Snake arcade game engineered with pure HTML5 Canvas, modern Vanilla CSS, and a procedural Web Audio API sound engine.
-
----
-
-## 🌟 Highlights
-
-- **Aesthetics & Atmosphere**: Cyberpunk neon vector grid, glowing cyan-to-magenta viper segments, screen shake impacts, and toggleable retro CRT scanlines.
-- **60–120 FPS Sub-Tick Interpolation**: Smooth fluid movement across the canvas without stuttering.
-- **Synthesized Web Audio**: 100% procedurally generated retro sound effects and synthwave soundtrack using pure Web Audio API (zero external `.mp3` dependencies).
-- **Dynamic Particle System**: Radial spark bursts, expanding shockwave rings, and ambient floating matrix dust motes.
-- **Multiple Game Modes**: Classic Arcade, Hazard Matrix (with Warp Portals), Time Trial, and Zen Mode.
-- **Responsive Controls**: Full keyboard support (`WASD` / Arrows / Space), touch swipes, and an on-screen Virtual D-Pad for mobile devices.
+> **Live Cab Comparator, 1-Tap Uber & Rapido Booking, and Peer-to-Peer Fare Splitting for Harcourt Butler Technical University (HBTU) Kanpur Students.**
 
 ---
 
-## 🎮 Game Modes
+## 🌟 What Sets This Apart from a Basic "Messenger"?
 
-| Mode | Description |
-| :--- | :--- |
-| **Classic Arcade** | Velocity ramps up with each core absorbed; configurable wall wrap. |
-| **Hazard Matrix** | Procedural laser barriers and coupled **Cyan ↔ Magenta Warp Portals** that teleport the viper through dimensional space! |
-| **Time Trial** | 60-second frenzy with timed bonus pickups and score multipliers. |
-| **Zen Flight** | Relaxed flow mode with infinite wall wrap and non-lethal self collisions. |
+Rather than acting merely as an informal chat board, **HBTU RidePool** is an end-to-end **Mobility & Transit Engine** that connects directly into the cab ecosystem:
+
+1. **⚡ Live Multi-Cab Fare Comparator (Uber vs. Ola vs. Rapido vs. inDrive)**:
+   - Compares live estimated tariffs across 4 major services for any campus corridor.
+   - Shows **Solo Cab Price vs. 4-Student Split Price** (e.g. ₹1,800 solo taxi to Lucknow Airport becomes **₹450/person**, saving ₹1,350 per student!).
+   - Displays estimated pickup arrival duration (*e.g. Uber: 3–7 mins, Rapido: 2–5 mins*).
+
+2. **🚀 1-Tap Uber & Rapido GPS Deep-Link Booking**:
+   - Universal URL intents with **exact pre-configured HBTU GPS coordinates**:
+     - *HBTU West Campus Gate / DBRA Hostel* (`26.4950° N, 80.3015° E`)
+     - *HBTU East Campus / Central Library* (`26.4862° N, 80.3160° E`)
+     - *Kanpur Central Platform 1 Cantt Side* (`26.4539° N, 80.3513° E`)
+     - *Lucknow CCS Airport Terminal 3* (`26.7606° N, 80.8893° E`)
+     - *Kanpur Chakeri Airport* (`26.4410° N, 80.4078° E`)
+   - Clicking **"Book on Uber"** or **"Book on Rapido"** opens the app with origin and destination already pre-filled.
+
+3. **🚖 Real-Time Driver & Cab Dispatch Broadcast**:
+   - Once the host books on Uber/Ola/Taxi, they log the driver's info:
+     - Driver Name & Direct Call Button
+     - Vehicle Model & Color (*e.g. White Maruti Suzuki Dzire*)
+     - Official Number Plate (*e.g. `UP 78 EZ 4821`*)
+     - Ride Start OTP (*e.g. `6192`*)
+   - Instantly broadcasts to every co-passenger's phone screen so nobody has to hunt for the car at the campus gate.
+
+4. **💸 Dynamic UPI Payment QR Code & Settlement**:
+   - Generates compliant `upi://pay?pa=...&pn=...&am=...&cu=INR` links with live dynamic QR codes.
+   - Co-passengers can scan and pay their ₹450 or ₹80 split via **Google Pay, PhonePe, or Paytm** in 5 seconds.
+   - Tracks payment status (*Paid ✓ vs. Pending*) without awkward money conversations.
+
+5. **🎯 Smart Schedule & Flight/Train Matcher**:
+   - Students enter their train or flight time window (*e.g. 4:30 PM departure*).
+   - An intelligent matching algorithm scores and pairs them with batchmates traveling in the same corridor within a ±30-to-60 minute window.
+
+6. **🛡️ Campus Safety & Verification**:
+   - Roll number & branch verification badges.
+   - **Girls-Only Pools (`🛡️ Girls Only`)**: Exclusive filter for female students.
+   - Direct emergency hotline buttons for **HBTU Proctorial Board**, **East/West Security**, **UP Women Helpline 1090**, and **112**.
 
 ---
 
-## ⚡ Quantum Pickups & Power-Ups
+## 💻 Tech Stack & Architecture
 
-- **Cyan Data Cube** (`#00f0ff`): Core objective item. +10 PTS and fuels the **Combo Multiplier Gauge** (up to 5x).
-- **Quantum Core** (`#ffe600`): Timed golden bonus orb appearing every 5 pickups with an animated countdown ring (+50 PTS).
-- **Phase Shift (Ghost)** (`#a855f7`): Translucent holographic phase mode; grants 6 seconds of invulnerability through walls and own tail.
-- **Turbo Surge** (`#ffe600`): Speed overclock with chromatic light trails and double points.
-- **Cryo Freeze** (`#00f0ff`): Slow-motion time dilation for precise navigation.
-- **EMP Magnet** (`#00ff66`): Magnetically attracts nearby data cubes into the viper head.
-- **Warp Portals**: Step into the Cyan portal to warp instantly out of the Magenta portal.
+- **Frontend**: HTML5, Modern Vanilla CSS3 (Glassmorphism, custom design system, fluid responsive grids).
+- **Transit Engine**: `js/cab-service.js` (Tariff calculations, Haversine road distances, GPS coordinates, Uber & Rapido deep-link builders, UPI string generators).
+- **Core State Engine**: `js/app.js` (Reactive filters, state persistence in `localStorage`, automated chat simulation, modal orchestration, Web Audio API sounds).
+- **Transit Radar**: `js/map-visualizer.js` (Interactive SVG campus corridors).
 
 ---
 
-## 🕹️ Controls
+## 🏃 Running the Application
 
-### Desktop
-- **Steer**: `W` `A` `S` `D` or Arrow Keys (`▲` `◀` `▼` `▶`)
-- **Pause / Tactical Freeze**: `SPACEBAR`
-- **Settings / Exit**: `ESC`
-
-### Mobile & Touch Devices
-- **Virtual D-Pad**: Tap the on-screen direction arrows.
-- **Touch Swipes**: Swipe directly anywhere on the canvas.
-
----
-
-## 🚀 Getting Started
-
-Simply open `index.html` in any modern web browser, or serve it locally:
-
+The web app runs locally on any web server:
 ```bash
-# Using Python
-python -m http.server 8080
-
-# Using Node (npx)
-npx serve .
+python -m http.server 3000
 ```
-
-Then visit `http://localhost:8080` in your browser.
-
----
-
-## 📁 Project Architecture
-
-```
-├── index.html        # Semantic HTML5 layout, HUD telemetry, and overlays
-├── css/
-│   └── style.css     # Cyberpunk design system, scanlines, and responsive HUD
-├── js/
-│   ├── app.js        # Main initialization and DPI scaling
-│   ├── audio.js      # Procedural Web Audio API sound & synthwave engine
-│   ├── game.js       # Core grid physics, portals, power-ups, and renderer
-│   ├── particles.js  # Canvas 2D spark explosions and shockwave system
-│   └── ui.js         # HUD counters, high scores, modals, and input bindings
-└── README.md
-```
-
----
-
-## 📄 License
-
-MIT License. Free to use, modify, and build upon!
+Open **[http://localhost:3000](http://localhost:3000)** in your browser.
