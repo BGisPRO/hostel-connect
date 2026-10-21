@@ -219,37 +219,81 @@
       const isFull = remainingSeats <= 0;
 
       // Direct links
-      const fromCoords = window.HBTUCabEngine ? window.HBTUCabEngine.resolveCoords(ride.from) : null;
-      const toCoords = window.HBTUCabEngine ? window.HBTUCabEngine.resolveCoords(ride.to) : null;
       const uberLink = CAB_SERVICES[1].buildLink(ride.from, ride.to);
+
+      // Clean display names
+      const fromShort = ride.from.split('(')[0].trim();
+      const toShort = ride.to.split('(')[0].trim();
+      const vehicleShort = ride.vehicleType.split('(')[0].trim();
+      const hostBranchShort = ride.host.branch ? ride.host.branch.split('&')[0].trim() : '';
+      const hostAvatar = ride.host.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ride.host.name)}`;
 
       return `
         <article class="minimal-ride-card" data-ride-id="${ride.id}">
-          <div class="ride-main-col">
-            <span class="ride-route-text">${ride.from.split('(')[0]} ➔ ${ride.to.split('(')[0]}</span>
-            <span class="ride-sub-text">🕒 ${formatTime(ride.departureTime)} • Host: ${ride.host.name}</span>
-          </div>
-
-          <div class="ride-meta-col">
-            <div class="ride-tag-row">
-              <span class="mini-tag ${remainingSeats > 0 ? 'green' : ''}">
-                ${remainingSeats > 0 ? `🟢 ${remainingSeats} seat${remainingSeats > 1 ? 's' : ''} open` : '🚫 Full'}
+          <!-- Top Bar: Status Badges & Price Split -->
+          <div class="ride-card-top-bar">
+            <div class="ride-card-badges">
+              <span class="ride-time-pill" title="Departure Time">
+                🕒 ${formatTime(ride.departureTime)}
               </span>
-              ${isGirls ? `<span class="mini-tag rose">🛡️ Girls Only</span>` : ''}
-              ${ride.driverDetails ? `<span class="mini-tag plate">${ride.driverDetails.plateNumber}</span>` : ''}
-              <span class="mini-tag">${ride.vehicleType.split('(')[0]}</span>
+              <span class="seat-pill ${remainingSeats > 0 ? 'available' : 'full'}">
+                ${remainingSeats > 0 ? `🟢 ${remainingSeats} seat${remainingSeats > 1 ? 's' : ''} left` : '🚫 Full'}
+              </span>
+              ${isGirls ? `<span class="tag-pill rose">🛡️ Girls Only</span>` : ''}
+              <span class="tag-pill vehicle-pill">${escapeHtml(vehicleShort)}</span>
+              ${ride.driverDetails ? `<span class="tag-pill plate">${escapeHtml(ride.driverDetails.plateNumber)}</span>` : ''}
             </div>
-            ${ride.notes ? `<span style="font-size: 0.73rem; color: var(--text-dim); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">"${ride.notes}"</span>` : ''}
+
+            <div class="ride-card-fare">
+              <span class="fare-val">₹${perHead}</span>
+              <span class="fare-note">per head</span>
+            </div>
           </div>
 
-          <div class="ride-action-col">
-            <div class="fare-display-block">
-              <span class="fare-display-amount">₹${perHead}</span>
-              <span class="fare-display-sub">per head</span>
+          <!-- Route Display: From ➔ To -->
+          <div class="ride-card-route">
+            <div class="route-station route-from">
+              <span class="station-marker origin"></span>
+              <div class="station-meta">
+                <span class="station-name">${escapeHtml(fromShort)}</span>
+                ${ride.fromDetail ? `<span class="station-detail" title="${escapeHtml(ride.fromDetail)}">${escapeHtml(ride.fromDetail)}</span>` : ''}
+              </div>
             </div>
 
-            <div class="card-action-btns">
-              <a href="${uberLink}" target="_blank" class="btn btn-uber btn-sm" title="Auto-Take in Uber with destination">
+            <div class="route-connector-arrow">
+              <span class="connector-track"></span>
+              <span class="connector-symbol">➔</span>
+            </div>
+
+            <div class="route-station route-to">
+              <span class="station-marker destination"></span>
+              <div class="station-meta">
+                <span class="station-name">${escapeHtml(toShort)}</span>
+                ${ride.toDetail ? `<span class="station-detail" title="${escapeHtml(ride.toDetail)}">${escapeHtml(ride.toDetail)}</span>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <!-- Trip Note -->
+          ${ride.notes ? `
+            <div class="ride-card-note" title="${escapeHtml(ride.notes)}">
+              <span class="note-icon">💬</span>
+              <span class="note-content">"${escapeHtml(ride.notes)}"</span>
+            </div>
+          ` : ''}
+
+          <!-- Bottom Bar: Host info & Action Buttons -->
+          <div class="ride-card-bottom-bar">
+            <div class="ride-host-chip">
+              <img src="${hostAvatar}" alt="${escapeHtml(ride.host.name)}" class="host-avatar">
+              <div class="host-info-text">
+                <span class="host-label">Host: <strong>${escapeHtml(ride.host.name)}</strong></span>
+                ${hostBranchShort ? `<span class="host-branch-text">${escapeHtml(hostBranchShort)}</span>` : ''}
+              </div>
+            </div>
+
+            <div class="ride-actions-row">
+              <a href="${uberLink}" target="_blank" class="btn btn-uber btn-sm" title="Auto-Take in Uber with destination prefilled">
                 Uber
               </a>
 

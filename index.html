@@ -27,11 +27,15 @@
       </div>
 
       <div class="nav-actions">
-        <button class="btn btn-secondary btn-sm" id="btnOpenSos">🛡️ Safety</button>
-        <button class="btn btn-primary btn-sm" id="btnOpenOfferRide">+ Post a Pool</button>
-        <button class="user-pill-btn" id="btnOpenProfile">
+        <button class="btn btn-secondary btn-sm" id="btnOpenSos" title="Campus Safety Helplines">
+          <span class="btn-icon">🛡️</span> <span class="nav-btn-text">Safety</span>
+        </button>
+        <button class="btn btn-primary btn-sm" id="btnOpenOfferRide" title="Post a New Cab Pool">
+          <span class="btn-icon">+</span> <span class="nav-btn-text">Post a Pool</span>
+        </button>
+        <button class="user-pill-btn" id="btnOpenProfile" title="My Student Profile">
           <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Kavya" alt="Avatar" class="user-pill-avatar" id="navUserAvatar">
-          <span id="navUserName">Kavya (IT '26)</span>
+          <span id="navUserName" class="nav-user-label">Kavya (IT '26)</span>
         </button>
       </div>
     </div>
@@ -69,12 +73,14 @@
 
       <!-- Quick Destination Chips -->
       <div class="dest-chips-row">
-        <span class="chips-label">Quick Destination:</span>
-        <button class="dest-chip active" data-dest="Lucknow Airport (CCS / Amausi - LKO)">✈️ Lucknow Airport</button>
-        <button class="dest-chip" data-dest="Kanpur Central Railway Station (CNB)">🚆 Kanpur Central</button>
-        <button class="dest-chip" data-dest="HBTU East Campus (Nawabganj)">🏛️ East Campus</button>
-        <button class="dest-chip" data-dest="Kanpur Airport (Chakeri - KNU)">🛫 Chakeri Airport</button>
-        <button class="dest-chip" data-dest="Z-Square Mall (Civil Lines)">🛍️ Z-Square Mall</button>
+        <span class="chips-label">Quick:</span>
+        <div class="dest-chips-scroll">
+          <button class="dest-chip active" data-dest="Lucknow Airport (CCS / Amausi - LKO)">✈️ Lucknow Airport</button>
+          <button class="dest-chip" data-dest="Kanpur Central Railway Station (CNB)">🚆 Kanpur Central</button>
+          <button class="dest-chip" data-dest="HBTU East Campus (Nawabganj)">🏛️ East Campus</button>
+          <button class="dest-chip" data-dest="Kanpur Airport (Chakeri - KNU)">🛫 Chakeri Airport</button>
+          <button class="dest-chip" data-dest="Z-Square Mall (Civil Lines)">🛍️ Z-Square Mall</button>
+        </div>
       </div>
 
       <!-- Direct Auto-Take Cards Grid (Rapido, Uber, Ola, Campus Auto) -->
