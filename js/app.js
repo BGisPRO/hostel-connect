@@ -84,7 +84,7 @@
       navContainer.innerHTML = `
         <button class="user-pill-btn" id="btnOpenProfile" title="My Student Profile">
           <img src="${currentUser.avatar}" alt="${escapeHtml(currentUser.name)}" class="user-pill-avatar" id="navUserAvatar">
-          <span class="nav-user-label">${escapeHtml(shortName)} (${escapeHtml(branchCode)} '${yearMatch})</span>
+          <span class="nav-user-label">${escapeHtml(shortName)} <span class="nav-user-sub">(${escapeHtml(branchCode)} '${yearMatch})</span></span>
           ${currentUser.verified ? '<span class="verified-dot" title="Verified HBTU Student">✓</span>' : ''}
         </button>
       `;
