@@ -77,10 +77,23 @@ const CAB_SERVICES = [
 class HBTUCabEngine {
   static resolveCoords(str) {
     if (!str) return HBTU_GEO_COORDINATES.west_campus;
+    if (typeof str === 'object' && str.lat && str.lng) return str;
     const lower = str.toLowerCase();
 
-    if (lower.includes('west') || lower.includes('dbra') || lower.includes('alaknanda')) return HBTU_GEO_COORDINATES.west_campus;
-    if (lower.includes('east') || lower.includes('nawabganj') || lower.includes('library')) return HBTU_GEO_COORDINATES.east_campus;
+    // Check structured hostel records
+    if (typeof HBTU_HOSTELS !== 'undefined') {
+      const h = HBTU_HOSTELS.find(hostel => lower.includes(hostel.name.toLowerCase()) || lower.includes(hostel.id));
+      if (h) {
+        return h.campus.includes('West') ? HBTU_GEO_COORDINATES.west_campus : HBTU_GEO_COORDINATES.east_campus;
+      }
+    }
+
+    if (lower.includes('west') || lower.includes('dbra') || lower.includes('ramanujan') || lower.includes('shridharacharya') || lower.includes('kalam') || lower.includes('visvesvaraya') || lower.includes('alaknanda') || lower.includes('mandakini')) {
+      return HBTU_GEO_COORDINATES.west_campus;
+    }
+    if (lower.includes('east') || lower.includes('nawabganj') || lower.includes('library') || lower.includes('raman') || lower.includes('vishwakarma') || lower.includes('ambedkar') || lower.includes('aryabhatt') || lower.includes('gangotri') || lower.includes('bhagirathi') || lower.includes('kaveri') || lower.includes('saraswati')) {
+      return HBTU_GEO_COORDINATES.east_campus;
+    }
     if (lower.includes('lucknow') || lower.includes('amausi') || lower.includes('lko')) return HBTU_GEO_COORDINATES.lucknow_airport;
     if (lower.includes('central') || lower.includes('cnb') || lower.includes('station')) return HBTU_GEO_COORDINATES.kanpur_central;
     if (lower.includes('chakeri') || lower.includes('knu')) return HBTU_GEO_COORDINATES.kanpur_airport;
