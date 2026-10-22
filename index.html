@@ -3,247 +3,670 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HBTU RidePool — Minimalist Campus Cab Sharing & Auto-Take Engine</title>
-  <meta name="description" content="Minimalist Cab Pooling & 1-Tap Auto-Take for HBTU Kanpur. Direct destination pre-fill on Rapido, Uber, and Ola with split fares.">
+  <title>HBTU RidePool — Smart Campus Cab & Auto-Pooling Network</title>
+  <meta name="description" content="Student-focused cab and auto-pooling platform for Harcourt Butler Technical University (HBTU) Kanpur. Split cab expenses, coordinate hostel rides, discover campus autos, and book with confidence.">
   
-  <!-- Fonts -->
+  <!-- Modern Typography Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- OpenStreetMap Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Design System Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <!-- Minimal Header -->
-  <header class="navbar">
+  <!-- Navigation Bar -->
+  <header class="navbar" role="banner">
     <div class="nav-inner">
-      <div class="brand-wrap" id="brandHomeBtn">
-        <span class="brand-dot"></span>
+      <a href="#" class="brand-wrap" id="brandHomeBtn" aria-label="HBTU RidePool Home">
+        <div class="brand-badge-icon">H</div>
         <div class="brand-text">
           <h1>HBTU RidePool</h1>
-          <span class="brand-sub">Campus Cab Engine</span>
+          <span class="brand-sub">Student Mobility Network • Kanpur</span>
         </div>
-      </div>
+      </a>
 
+      <!-- Desktop Nav Links -->
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="#explore-rides" class="nav-link active">Find a Ride</a></li>
+          <li><a href="#campus-auto" class="nav-link">Campus Auto</a></li>
+          <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li><a href="#campus-safety" class="nav-link">Safety</a></li>
+          <li><a href="#" id="btnNavGuideDownload" class="nav-link">Student Guide</a></li>
+        </ul>
+      </nav>
+
+      <!-- Nav Actions & Profile -->
       <div class="nav-actions">
         <button class="btn btn-secondary btn-sm" id="btnOpenSos" title="Campus Safety Helplines">
-          <span class="btn-icon">🛡️</span> <span class="nav-btn-text">Safety</span>
+          <span>🛡️ Safety</span>
         </button>
-        <button class="btn btn-primary btn-sm" id="btnOpenOfferRide" title="Post a New Cab Pool">
-          <span class="btn-icon">+</span> <span class="nav-btn-text">Post a Pool</span>
+        <button class="btn btn-orange btn-sm" id="btnOpenOfferRide" title="Post a New Cab Pool">
+          <span>+ Post a Ride</span>
         </button>
-        <button class="user-pill-btn" id="btnOpenProfile" title="My Student Profile">
-          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Kavya" alt="Avatar" class="user-pill-avatar" id="navUserAvatar">
-          <span id="navUserName" class="nav-user-label">Kavya (IT '26)</span>
-        </button>
+        <div id="authNavContainer">
+          <!-- Populated dynamically via JS: Login button or Student profile pill -->
+          <button class="user-pill-btn" id="btnOpenProfile" title="My Student Profile">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Kavya" alt="Avatar" class="user-pill-avatar" id="navUserAvatar">
+            <span id="navUserName" class="nav-user-label">Kavya (IT '26)</span>
+            <span class="verified-dot" title="Verified HBTU Student">✓</span>
+          </button>
+        </div>
       </div>
     </div>
   </header>
 
+  <!-- Main Content Container -->
   <main class="app-container">
 
-    <!-- Minimalist Direct Auto-Take Bar -->
-    <section class="autotake-section glass-panel">
-      <div class="route-selector-row">
-        <div class="route-field">
-          <span class="field-label">FROM</span>
-          <select id="directFromSelect" class="clean-select">
-            <option value="HBTU West Campus (Awadhpuri)">HBTU West Campus (Awadhpuri Gate)</option>
-            <option value="HBTU East Campus (Nawabganj)">HBTU East Campus (Central Library)</option>
-            <option value="Kanpur Central Railway Station (CNB)">Kanpur Central (CNB Cantt)</option>
-          </select>
+    <!-- Hero Section -->
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <div class="hero-pill-badge">
+          <span>🎓 Harcourt Butler Technical University</span>
+        </div>
+        <h2 id="hero-title" class="hero-headline">Your Destination. Their Route. Shared Ride.</h2>
+        <p class="hero-supporting">
+          Find fellow HBTU students heading your way, share travel costs, and plan smarter journeys from campus hostels to Kanpur Central, Lucknow Airport, and city hubs.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#explore-rides" class="btn btn-primary btn-lg" id="heroFindRideBtn">
+            Find a Ride ➔
+          </a>
+          <button class="btn btn-secondary btn-lg" id="heroPostRideBtn">
+            + Post a Ride
+          </button>
         </div>
 
-        <div class="route-divider">➔</div>
-
-        <div class="route-field">
-          <span class="field-label">WHERE ARE YOU HEADING?</span>
-          <select id="directToSelect" class="clean-select highlight-select">
-            <option value="Lucknow Airport (CCS / Amausi - LKO)">✈️ Lucknow Airport (CCS / LKO)</option>
-            <option value="Kanpur Central Railway Station (CNB)">🚆 Kanpur Central Railway Station (CNB)</option>
-            <option value="HBTU East Campus (Nawabganj)">🏛️ HBTU East Campus (Shuttle)</option>
-            <option value="HBTU West Campus (Awadhpuri)">🏛️ HBTU West Campus (Shuttle)</option>
-            <option value="Kanpur Airport (Chakeri - KNU)">🛫 Kanpur Airport (Chakeri - KNU)</option>
-            <option value="Z-Square Mall (Civil Lines)">🛍️ Z-Square Mall (Civil Lines)</option>
-            <option value="Rawatpur Railway Station">🚆 Rawatpur Railway Station</option>
-          </select>
+        <div class="hero-trust-text">
+          <span>🔒 Built for the HBTU student community • Verified Peer-to-Peer Mobility</span>
         </div>
       </div>
 
-      <!-- Quick Destination Chips -->
-      <div class="dest-chips-row">
-        <span class="chips-label">Quick:</span>
-        <div class="dest-chips-scroll">
-          <button class="dest-chip active" data-dest="Lucknow Airport (CCS / Amausi - LKO)">✈️ Lucknow Airport</button>
-          <button class="dest-chip" data-dest="Kanpur Central Railway Station (CNB)">🚆 Kanpur Central</button>
-          <button class="dest-chip" data-dest="HBTU East Campus (Nawabganj)">🏛️ East Campus</button>
-          <button class="dest-chip" data-dest="Kanpur Airport (Chakeri - KNU)">🛫 Chakeri Airport</button>
-          <button class="dest-chip" data-dest="Z-Square Mall (Civil Lines)">🛍️ Z-Square Mall</button>
-        </div>
-      </div>
-
-      <!-- Direct Auto-Take Cards Grid (Rapido, Uber, Ola, Campus Auto) -->
-      <div class="autotake-cards-grid" id="autoTakeCardsGrid">
-        <!-- Populated via JS -->
+      <div class="hero-image-wrap">
+        <img src="assets/images/hbtu_main_building.jpg" alt="Harcourt Butler Technical University Main Academic Building" class="hero-campus-photo" loading="eager">
+        <div class="hero-photo-tag">🏛️ HBTU Historic Academic Complex, Kanpur</div>
       </div>
     </section>
 
-    <!-- Rides Feed Filter & List -->
-    <section class="feed-section">
-      <div class="feed-header">
+    <!-- Quick Route Selector & Comparator Card -->
+    <section class="quick-route-card" id="quick-route-section" aria-labelledby="route-selector-title">
+      <div class="quick-route-header">
+        <h3 id="route-selector-title" class="quick-route-title">
+          <span>🚖 Quick Route & Fare Comparator</span>
+        </h3>
+        <span style="font-size: 0.8rem; color: var(--text-dim);">Accurate GPS Coordinates for HBTU Corridors</span>
+      </div>
+
+      <form id="quickRouteForm" onsubmit="event.preventDefault();">
+        <div class="route-form-grid">
+          <!-- From Field with Map Picker -->
+          <div class="route-field-group">
+            <label for="directFromSelect" class="route-field-label">PICKUP POINT</label>
+            <div class="field-with-btn">
+              <select id="directFromSelect" class="clean-select" aria-label="Select pickup point">
+                <!-- Injected via JS with categorized hostels & campus gates -->
+              </select>
+              <button type="button" class="btn-map-pin" id="btnPickFromMap" title="Choose pickup on interactive map" aria-label="Pick origin on map">
+                📍
+              </button>
+            </div>
+          </div>
+
+          <div class="route-divider-col">➔</div>
+
+          <!-- Destination Field with Map Picker -->
+          <div class="route-field-group">
+            <label for="directToSelect" class="route-field-label">WHERE ARE YOU HEADING?</label>
+            <div class="field-with-btn">
+              <select id="directToSelect" class="clean-select" aria-label="Select destination">
+                <!-- Injected via JS with airports, stations and hostels -->
+              </select>
+              <button type="button" class="btn-map-pin" id="btnPickToMap" title="Choose destination on interactive map" aria-label="Pick destination on map">
+                📍
+              </button>
+            </div>
+          </div>
+
+          <!-- Travel Date -->
+          <div class="route-field-group">
+            <label for="routeDateFilter" class="route-field-label">TRAVEL DATE</label>
+            <input type="date" id="routeDateFilter" class="clean-input" aria-label="Filter by travel date">
+          </div>
+
+          <!-- Submit Action -->
+          <button type="button" class="btn btn-primary" id="btnExecuteSearch" style="height: 42px;">
+            Search Rides
+          </button>
+        </div>
+      </form>
+
+      <!-- Quick Destination Chips -->
+      <div class="dest-chips-row">
+        <span class="chips-label">Popular Corridors:</span>
+        <button type="button" class="dest-chip active" data-dest="Lucknow Airport (CCS / Amausi - LKO)">✈️ Lucknow Airport</button>
+        <button type="button" class="dest-chip" data-dest="Kanpur Central Railway Station (CNB)">🚆 Kanpur Central (CNB)</button>
+        <button type="button" class="dest-chip" data-dest="HBTU East Campus (Central Library Gate)">🏛️ East Campus Shuttle</button>
+        <button type="button" class="dest-chip" data-dest="HBTU West Campus (Awadhpuri Gate)">🏛️ West Campus Shuttle</button>
+        <button type="button" class="dest-chip" data-dest="Kanpur Airport (Chakeri - KNU)">🛫 Chakeri Airport</button>
+        <button type="button" class="dest-chip" data-dest="Z-Square Mall (Civil Lines)">🛍️ Z-Square Mall</button>
+      </div>
+
+      <!-- Live Multi-Cab Fare Comparator Grid (Uber, Ola, Rapido, Campus Auto) -->
+      <div class="comparator-grid" id="autoTakeCardsGrid" aria-label="Ride Hailing Options">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- Active Ride Pools Feed Section -->
+    <section class="feed-section" id="explore-rides" aria-labelledby="feed-heading">
+      <div class="feed-header-bar">
         <div class="feed-title-wrap">
-          <h2>Active Campus Pools</h2>
-          <span class="count-pill" id="feedCountPill">6 Rides</span>
+          <h2 id="feed-heading">Active Campus Pools</h2>
+          <span class="feed-count-pill" id="feedCountPill">Loading rides...</span>
         </div>
 
-        <div class="filter-pills">
-          <button class="filter-pill active" data-feed-tab="all">All Pools</button>
-          <button class="filter-pill" data-feed-tab="my_pools">My Bookings</button>
-          <button class="filter-pill" data-feed-tab="girls_only">🛡️ Girls Only</button>
+        <!-- Filter Pills Bar -->
+        <div class="filter-pills-bar" role="tablist">
+          <button class="filter-pill active" data-feed-tab="all" role="tab" aria-selected="true">All Rides</button>
+          <button class="filter-pill" data-feed-tab="leaving_soon" role="tab" aria-selected="false">⚡ Leaving Soon</button>
+          <button class="filter-pill" data-feed-tab="upcoming" role="tab" aria-selected="false">📅 Upcoming</button>
+          <button class="filter-pill" data-feed-tab="campus_auto" role="tab" aria-selected="false">🛺 Campus Auto</button>
+          <button class="filter-pill" data-feed-tab="my_pools" role="tab" aria-selected="false">My Rides</button>
+          <button class="filter-pill" data-feed-tab="girls_only" role="tab" aria-selected="false">🛡️ Girls Only</button>
         </div>
       </div>
 
-      <!-- Minimalist Rides Feed -->
-      <div class="minimal-rides-list" id="ridesContainer">
-        <!-- Rendered via JS -->
+      <!-- Minimalist Rides Feed Container -->
+      <div class="rides-list-grid" id="ridesContainer" role="region" aria-live="polite">
+        <!-- Injected dynamically via JS -->
       </div>
 
       <!-- Empty State -->
-      <div id="noRidesFound" class="glass-panel empty-card" style="display: none;">
-        <p>No student has posted a pool for this route yet.</p>
-        <button class="btn btn-primary btn-sm" id="btnEmptyOfferRide">+ Post this Pool</button>
+      <div id="noRidesFound" class="empty-feed-card" style="display: none;">
+        <div class="empty-icon">🚖</div>
+        <h3>No student has posted a pool for this route yet</h3>
+        <p>Start a pool to invite batchmates traveling in the same corridor, split the tariff, and coordinate directly.</p>
+        <button class="btn btn-orange btn-lg" id="btnEmptyOfferRide">+ Start This Ride Pool</button>
+      </div>
+    </section>
+
+    <!-- Dedicated Campus Auto Section -->
+    <section class="campus-auto-section" id="campus-auto" aria-labelledby="campus-auto-title">
+      <div class="auto-header-row">
+        <div class="auto-header-text">
+          <h2 id="campus-auto-title">🛺 HBTU Campus Auto & Shuttle Schedules</h2>
+          <p>Community-verified timetables connecting East Campus (Nawabganj), West Campus (Awadhpuri), and Rawatpur Station.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="btnReportAutoSchedule">
+          <span>+ Report / Update Auto Schedule</span>
+        </button>
+      </div>
+
+      <div class="auto-routes-grid" id="autoRoutesContainer">
+        <!-- Rendered via JS -->
+      </div>
+
+      <div class="auto-disclaimer-box">
+        <strong>Notice on Auto Timetables:</strong> Schedules and tariffs are reported by HBTU students and verified periodically. Departure wait times depend on passenger occupancy at campus gates. Always confirm fare with the driver before boarding.
+      </div>
+    </section>
+
+    <!-- How It Works Section & Storyboard Player -->
+    <section class="how-it-works-section" id="how-it-works" aria-labelledby="how-it-works-title">
+      <div class="section-heading-center">
+        <h2 id="how-it-works-title">How HBTU RidePool Works</h2>
+        <p>Simple, reliable campus carpooling designed specifically for university students.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h4 class="step-title">Choose Pickup & Destination</h4>
+          <p class="step-desc">Select your campus hostel (e.g., Ramanujan or Alaknanda) and destination via dropdown or interactive OpenStreetMap.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h4 class="step-title">Find a Pool or Post Your Own</h4>
+          <p class="step-desc">Browse batchmates heading to Kanpur Central or Lucknow Airport, or create a pool specifying seats and estimated fare.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h4 class="step-title">Coordinate & Confirm</h4>
+          <p class="step-desc">Request a seat. The ride creator confirms passengers, and everyone coordinates pickup via in-pool chat.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h4 class="step-title">1-Tap Cab App If Needed</h4>
+          <p class="step-desc">If hiring an actual commercial cab, use our 1-tap deep links to launch Uber, Ola, or Rapido with coordinates already pre-filled.</p>
+        </div>
+      </div>
+
+      <!-- Interactive Storyboard / Explainer Preview -->
+      <div class="storyboard-player-wrap">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em;">Interactive Demonstration Preview</span>
+          <span style="font-size: 0.75rem; color: #94a3b8;" id="storyboardStepIndicator">Step 1 of 6</span>
+        </div>
+
+        <div class="storyboard-screen" id="storyboardScreen">
+          <div class="storyboard-screen-icon" id="storyboardIcon">🏨</div>
+          <h4 class="storyboard-screen-title" id="storyboardTitle">1. Select Campus Hostel</h4>
+          <p class="storyboard-screen-caption" id="storyboardCaption">
+            Student selects their hostel from the 14 verified East and West campus locations. Verified coordinates are loaded automatically.
+          </p>
+        </div>
+
+        <div class="storyboard-controls">
+          <div class="storyboard-step-buttons" id="storyboardDots">
+            <button class="step-dot-btn active" data-step="0">1</button>
+            <button class="step-dot-btn" data-step="1">2</button>
+            <button class="step-dot-btn" data-step="2">3</button>
+            <button class="step-dot-btn" data-step="3">4</button>
+            <button class="step-dot-btn" data-step="4">5</button>
+            <button class="step-dot-btn" data-step="5">6</button>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-sm btn-secondary" id="btnStoryboardPrev">◀ Prev</button>
+            <button class="btn btn-sm btn-primary" id="btnStoryboardNext">Next ▶</button>
+            <button class="btn btn-sm btn-secondary" id="btnToggleTranscript">Transcript</button>
+          </div>
+        </div>
+
+        <!-- Accessible Transcript Drawer -->
+        <div id="storyboardTranscript" style="display: none; margin-top: 1rem; padding: 1rem; background: #1e293b; border-radius: var(--radius-sm); font-size: 0.8rem; line-height: 1.5; color: #cbd5e1;">
+          <strong>Complete Storyboard Transcript:</strong><br>
+          1. Student selects verified hostel on campus (e.g. Ramanujan or Alaknanda).<br>
+          2. Destination is chosen using search or interactive map (e.g. Kanpur Central or Lucknow Airport).<br>
+          3. Matching active student pools appear with departure times and fare per student.<br>
+          4. Student requests a seat; the pool creator accepts or rejects with a notification.<br>
+          5. Once accepted, students settle the transparent cost share via UPI QR or cash.<br>
+          6. If a commercial taxi is booked, 1-tap Uber/Ola/Rapido deep links transfer exact coordinates.
+        </div>
+      </div>
+    </section>
+
+    <!-- Downloadable Free Guide Callout -->
+    <section class="quick-route-card" style="background: linear-gradient(135deg, #f0fdfa, #f8fafc); border-color: #99f6e4; margin-bottom: 3rem;" aria-label="Student Guide Download">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;">
+        <div>
+          <span class="hero-pill-badge" style="margin-bottom: 0.4rem;">Free Resource for HBTU Students</span>
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.35rem;">
+            New to HBTU RidePool? Download the Free Guide
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); max-width: 620px;">
+            Download our complete <strong>HBTU RidePool — Student Quick Start Guide (PDF)</strong>. Includes step-by-step pool coordination, hostel directories, fare calculation formulas, cancellation rules, and 24x7 safety helplines.
+          </p>
+        </div>
+
+        <button class="btn btn-orange btn-lg" id="btnDownloadGuideCta">
+          <span>📥 Download Free PDF Guide</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Campus Trust, Safety & Helplines Section -->
+    <section class="safety-section" id="campus-safety" aria-labelledby="safety-title">
+      <div class="section-heading-center">
+        <h2 id="safety-title">Campus Trust & Safety Guidelines</h2>
+        <p>Built with verified student identities, strict privacy controls, and direct campus emergency access.</p>
+      </div>
+
+      <div class="safety-grid">
+        <div class="safety-feature-card">
+          <div class="safety-icon">🎓</div>
+          <h4 class="safety-card-title">Verified Student Profiles</h4>
+          <p class="safety-card-text">Accounts are verified with institutional university emails and academic roll numbers. Trust badges indicate student community standing.</p>
+        </div>
+
+        <div class="safety-feature-card">
+          <div class="safety-icon">🛡️</div>
+          <h4 class="safety-card-title">Girls-Only Pool Protection</h4>
+          <p class="safety-card-text">Female students have dedicated filters to participate in pools strictly reserved for women riders, especially for late evening arrivals.</p>
+        </div>
+
+        <div class="safety-feature-card">
+          <div class="safety-icon">🔒</div>
+          <h4 class="safety-card-title">Default Privacy Protection</h4>
+          <p class="safety-card-text">Personal phone numbers and payment IDs are kept completely private. Contact info is only shared with confirmed co-passengers in an approved ride.</p>
+        </div>
+
+        <div class="safety-feature-card">
+          <div class="safety-icon">🚨</div>
+          <h4 class="safety-card-title">Direct Campus Helplines</h4>
+          <p class="safety-card-text">Immediate 1-tap call access to the HBTU Proctorial Board, East/West Security, UP Women Power Line (1090), and Police (112).</p>
+        </div>
+      </div>
+
+      <!-- Crucial Distinction Table -->
+      <table class="distinction-table" aria-label="Ride Types Distinction">
+        <thead>
+          <tr>
+            <th>Status / Category</th>
+            <th>What It Means</th>
+            <th>Booking & Confirmation Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Student Carpool</strong></td>
+            <td>Informal peer-to-peer ride coordination organized directly between HBTU students.</td>
+            <td>Host confirms seat requests within HBTU RidePool. No commercial vehicle is booked.</td>
+          </tr>
+          <tr>
+            <td><strong>Commercial Cab (Uber / Ola / Rapido)</strong></td>
+            <td>Third-party licensed commercial cab service ordered via official apps.</td>
+            <td>Must be confirmed and paid inside Uber, Ola, or Rapido apps. HBTU RidePool only passes GPS coordinates.</td>
+          </tr>
+          <tr>
+            <td><strong>Campus Auto Shuttle</strong></td>
+            <td>Shared local electric rickshaws and autos operating between East and West campus gates.</td>
+            <td>Boarded in-person at campus gates. Tariffs are paid directly to auto operators.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Community Feedback & Transparent Testimonials -->
+    <section class="feedback-section" id="student-feedback" aria-labelledby="feedback-title">
+      <div class="section-heading-center">
+        <h2 id="feedback-title">Built Around Student Travel</h2>
+        <p>Real feedback from HBTU students. Help us improve campus transit by submitting your experience.</p>
+      </div>
+
+      <div class="feedback-grid">
+        <!-- Community Feedback List -->
+        <div>
+          <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-heading);">Community Suggestions & Reports</h4>
+          <div id="communityFeedbackList">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Feedback Form -->
+        <div style="background: var(--bg-card-subtle); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+          <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-heading);">Submit Your Campus Travel Feedback</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Have a route suggestion, auto fare update, or safety comment? Let us know.</p>
+
+          <form id="feedbackSubmitForm">
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label for="fbAuthorName">Your Name & Branch</label>
+              <input type="text" id="fbAuthorName" class="clean-input" placeholder="e.g. Priyanshu (Chemical '27)" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label for="fbCategory">Feedback Category</label>
+              <select id="fbCategory" class="clean-select" required>
+                <option value="Route Suggestion">Route Suggestion</option>
+                <option value="Auto Schedule Update">Auto Schedule Update</option>
+                <option value="Safety & Privacy">Safety & Privacy</option>
+                <option value="General Feedback">General Feedback</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="fbMessage">Message</label>
+              <textarea id="fbMessage" class="clean-input" style="height: 80px; padding: 0.6rem;" placeholder="Share your experience or suggestion..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              Submit Feedback
+            </button>
+          </form>
+        </div>
       </div>
     </section>
 
   </main>
 
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
+    <button class="mobile-nav-item active" data-target="#explore-rides">
+      <span class="mobile-nav-icon">🔍</span>
+      <span>Explore</span>
+    </button>
+    <button class="mobile-nav-item" data-target="#campus-auto">
+      <span class="mobile-nav-icon">🛺</span>
+      <span>Auto</span>
+    </button>
+    <button class="mobile-nav-item" id="btnMobilePostRide">
+      <span class="mobile-nav-icon">➕</span>
+      <span>Post</span>
+    </button>
+    <button class="mobile-nav-item" id="btnMobileMyTrips">
+      <span class="mobile-nav-icon">🎫</span>
+      <span>Trips</span>
+    </button>
+    <button class="mobile-nav-item" id="btnMobileProfile">
+      <span class="mobile-nav-icon">👤</span>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- Footer -->
+  <footer class="app-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h4>HBTU RidePool</h4>
+        <p>A student-engineered peer mobility and cab-pooling platform for Harcourt Butler Technical University, Kanpur. Built to make student journeys safer, smarter, and cost-effective.</p>
+        <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-dim);">
+          <span>Not affiliated with or officially endorsed by HBTU Administration. Independent student initiative.</span>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h5>Corridors & Transit</h5>
+        <ul>
+          <li><a href="#quick-route-section">Kanpur Central Railway Station (CNB)</a></li>
+          <li><a href="#quick-route-section">Lucknow CCS Airport (LKO)</a></li>
+          <li><a href="#quick-route-section">Kanpur Chakeri Airport (KNU)</a></li>
+          <li><a href="#campus-auto">East ⇄ West Campus Shuttle</a></li>
+          <li><a href="#quick-route-section">Z-Square Mall (Civil Lines)</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Trust & Legal</h5>
+        <ul>
+          <li><a href="#" class="open-legal-link" data-doc="privacy">Privacy Policy</a></li>
+          <li><a href="#" class="open-legal-link" data-doc="terms">Terms of Service</a></li>
+          <li><a href="#" class="open-legal-link" data-doc="community">Community Guidelines</a></li>
+          <li><a href="#" class="open-legal-link" data-doc="safety">Safety Guidelines</a></li>
+          <li><a href="#" class="open-legal-link" data-doc="contact">Contact & Support</a></li>
+          <li><a href="#" id="btnOpenAdminPortal" style="color: var(--text-dim); font-size: 0.75rem;">Admin Portal 🔒</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 HBTU RidePool Community. Built with OpenStreetMap & Leaflet.</span>
+      <span>Version 2.1 (Production Release)</span>
+    </div>
+  </footer>
+
   <!-- ==========================================================================
        MODALS
        ========================================================================== -->
 
-  <!-- 1. Offer / Post a Cab Ride Modal -->
-  <div class="modal-overlay" id="offerRideModal">
+  <!-- 1. Interactive Map Picker Modal (Leaflet + OpenStreetMap) -->
+  <div class="modal-overlay" id="mapPickerModal" role="dialog" aria-labelledby="mapPickerModalTitle" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="mapPickerModalTitle">Select Location on Campus Map</h3>
+        <button class="modal-close-btn" data-close-modal="mapPickerModal" aria-label="Close Map">&times;</button>
+      </div>
+      <div class="modal-body" style="padding-bottom: 0.5rem;">
+        <!-- Search Bar -->
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <input type="text" id="mapSearchInput" class="clean-input" placeholder="Search hostel, gate, landmark, or street in Kanpur...">
+          <button type="button" class="btn btn-primary" id="btnMapSearchExecute">Search</button>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="map-preset-chips" id="mapPresetChips"></div>
+
+        <!-- Leaflet Map Container -->
+        <div id="leafletMapPicker"></div>
+
+        <!-- Coordinates Status Bar -->
+        <div class="map-selected-info-bar">
+          <div>
+            <strong id="mapSelectedPlaceName" style="color: var(--text-heading); display: block;">HBTU West Campus</strong>
+            <span id="mapSelectedCoords" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);">26.4950° N, 80.3015° E</span>
+          </div>
+          <span id="mapGeocodeStatus" style="font-size: 0.75rem; color: var(--primary);">Drag pin or click map to choose spot</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-close-modal="mapPickerModal">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btnConfirmMapLocation">Use Selected Location</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Post / Offer a Cab Pool Modal -->
+  <div class="modal-overlay" id="offerRideModal" role="dialog" aria-labelledby="postPoolModalTitle" aria-modal="true">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>Post a Cab Pool</h3>
-        <button class="modal-close-btn" data-close-modal="offerRideModal">&times;</button>
+        <h3 id="postPoolModalTitle">Post a Campus Ride Pool</h3>
+        <button class="modal-close-btn" data-close-modal="offerRideModal" aria-label="Close">&times;</button>
       </div>
       <form id="offerRideForm">
         <div class="modal-body">
           <div class="form-row-2">
             <div class="form-group">
-              <label>Starting Point</label>
+              <label for="offerFrom">Starting Point</label>
               <select id="offerFrom" class="clean-select" required></select>
             </div>
             <div class="form-group">
-              <label>Pickup Spot</label>
-              <input type="text" id="offerFromDetail" class="clean-input" placeholder="e.g. DBRA Hostel Gate" required>
+              <label for="offerFromDetail">Exact Pickup Landmark</label>
+              <input type="text" id="offerFromDetail" class="clean-input" placeholder="e.g. Ramanujan Gate 2" required>
             </div>
           </div>
 
           <div class="form-row-2">
             <div class="form-group">
-              <label>Destination</label>
+              <label for="offerTo">Destination</label>
               <select id="offerTo" class="clean-select" required></select>
             </div>
             <div class="form-group">
-              <label>Drop Location</label>
+              <label for="offerToDetail">Drop Landmark</label>
               <input type="text" id="offerToDetail" class="clean-input" placeholder="e.g. Terminal 3 / Platform 1" required>
             </div>
           </div>
 
           <div class="form-row-2">
             <div class="form-group">
-              <label>Departure Date & Time</label>
+              <label for="offerTime">Departure Date & Time</label>
               <input type="datetime-local" id="offerTime" class="clean-input" required>
             </div>
             <div class="form-group">
-              <label>Vehicle Type</label>
+              <label for="offerVehicle">Vehicle Type</label>
               <select id="offerVehicle" class="clean-select" required>
                 <option value="Sedan (Dzire / Etios)">Sedan (Dzire / Etios)</option>
-                <option value="SUV / MUV (Ertiga)">SUV / MUV (Ertiga)</option>
+                <option value="SUV / MUV (Ertiga / Innova)">SUV / MUV (Ertiga / Innova)</option>
                 <option value="Hatchback / Mini">Hatchback / Mini</option>
-                <option value="Campus Auto">Campus Auto</option>
+                <option value="Campus Auto / E-Rickshaw">Campus Auto / E-Rickshaw</option>
               </select>
             </div>
           </div>
 
           <div class="form-row-2">
             <div class="form-group">
-              <label>Total Cab Fare (₹)</label>
+              <label for="offerTotalFare">Total Estimated Fare (₹)</label>
               <input type="number" id="offerTotalFare" class="clean-input" min="50" max="10000" step="10" placeholder="e.g. 1800" required>
+              <span class="form-help-text">Meter or estimated cab rate</span>
             </div>
             <div class="form-group">
-              <label>Total Seats</label>
+              <label for="offerTotalSeats">Total Seats Available</label>
               <select id="offerTotalSeats" class="clean-select" required>
                 <option value="4" selected>4 Seats</option>
                 <option value="3">3 Seats</option>
                 <option value="6">6 Seats</option>
+                <option value="2">2 Seats</option>
               </select>
             </div>
           </div>
 
           <div class="form-row-2">
             <div class="form-group">
-              <label>Gender Preference</label>
+              <label for="offerGenderPref">Rider Preference</label>
               <select id="offerGenderPref" class="clean-select" required>
-                <option value="any">Open to All</option>
+                <option value="any">Open to All Students</option>
                 <option value="girls_only">🛡️ Girls Only</option>
                 <option value="boys_only">Boys Only</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Your UPI ID</label>
+              <label for="offerHostUpi">Your UPI ID (For Split)</label>
               <input type="text" id="offerHostUpi" class="clean-input" placeholder="e.g. roll@okaxis" required>
+              <span class="form-help-text">Kept private from public view</span>
             </div>
           </div>
 
           <div class="form-group">
-            <label>Trip Note (Optional)</label>
-            <input type="text" id="offerNotes" class="clean-input" placeholder="e.g. Indigo flight 6E-241 at 6:45 PM">
+            <label for="offerNotes">Trip Notes / Flight or Train Details (Optional)</label>
+            <input type="text" id="offerNotes" class="clean-input" placeholder="e.g. IndiGo flight 6E-241 at 6:45 PM. Luggage space available.">
           </div>
 
-          <div class="minimal-split-preview">
-            <span>Fair Split:</span>
-            <strong id="offerSplitPreview">₹450 / student</strong>
+          <div style="background: var(--primary-subtle); border: 1px solid var(--primary-border); border-radius: var(--radius-sm); padding: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-size: 0.72rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">Indicative Fare Split</span>
+              <div style="font-size: 1.25rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-heading);" id="offerSplitPreview">₹450 / student</div>
+            </div>
+            <span style="font-size: 0.72rem; color: var(--text-dim); text-align: right; max-width: 160px;">Includes ride creator. Transparent equal split.</span>
+          </div>
+
+          <div style="font-size: 0.75rem; color: var(--text-dim); display: flex; align-items: flex-start; gap: 0.4rem;">
+            <input type="checkbox" id="offerTermsAgree" required style="margin-top: 2px;">
+            <label for="offerTermsAgree">I acknowledge that this is a student-organized carpool, not a commercial taxi reservation. I will coordinate respectfully with confirmed co-passengers.</label>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary btn-sm" data-close-modal="offerRideModal">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm">Publish Pool</button>
+          <button type="submit" class="btn btn-orange btn-sm">Publish Campus Pool</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- 2. Ride Detail Modal -->
-  <div class="modal-overlay" id="rideDetailModal">
+  <!-- 3. Ride Detail & Seat Request Modal -->
+  <div class="modal-overlay" id="rideDetailModal" role="dialog" aria-labelledby="detailModalTitle" aria-modal="true">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 id="detailModalTitle">Pool Details</h3>
-        <button class="modal-close-btn" data-close-modal="rideDetailModal">&times;</button>
+        <h3 id="detailModalTitle">Pool Details & Request</h3>
+        <button class="modal-close-btn" data-close-modal="rideDetailModal" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body" id="detailModalBody"></div>
       <div class="modal-footer" id="detailModalFooter"></div>
     </div>
   </div>
 
-  <!-- 3. Chat Modal -->
-  <div class="modal-overlay" id="rideChatModal">
+  <!-- 4. Pool Chat Modal -->
+  <div class="modal-overlay" id="rideChatModal" role="dialog" aria-labelledby="chatModalTitle" aria-modal="true">
     <div class="modal-dialog">
       <div class="modal-header">
         <div>
           <h3 id="chatModalTitle">Pool Chat</h3>
-          <span style="font-size: 0.72rem; color: var(--text-muted);" id="chatModalSub">Coordinate pickup</span>
+          <span style="font-size: 0.75rem; color: var(--text-dim);" id="chatModalSub">Coordinate pickup with co-passengers</span>
         </div>
-        <button class="modal-close-btn" data-close-modal="rideChatModal">&times;</button>
+        <button class="modal-close-btn" data-close-modal="rideChatModal" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body" style="padding-bottom: 0.5rem;">
         <div class="chat-window">
-          <div class="chat-messages-area" id="chatMessagesArea"></div>
-          <form class="chat-input-bar" id="chatSendForm">
-            <input type="text" id="chatInputMessage" class="clean-input" placeholder="Type a message..." required>
+          <div class="chat-messages-area" id="chatMessagesArea" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem 0;"></div>
+          <form class="chat-input-bar" id="chatSendForm" style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+            <input type="text" id="chatInputMessage" class="clean-input" placeholder="Type a message to pool members..." required>
             <button type="submit" class="btn btn-primary btn-sm">Send</button>
           </form>
         </div>
@@ -254,12 +677,12 @@
     </div>
   </div>
 
-  <!-- 4. UPI Modal -->
-  <div class="modal-overlay" id="upiModal">
+  <!-- 5. Private UPI Settlement Modal -->
+  <div class="modal-overlay" id="upiModal" role="dialog" aria-labelledby="upiModalTitle" aria-modal="true">
     <div class="modal-dialog" style="max-width: 420px;">
       <div class="modal-header">
-        <h3>UPI Settlement</h3>
-        <button class="modal-close-btn" data-close-modal="upiModal">&times;</button>
+        <h3 id="upiModalTitle">UPI Fare Settlement</h3>
+        <button class="modal-close-btn" data-close-modal="upiModal" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body" id="upiModalBody" style="text-align: center;"></div>
       <div class="modal-footer" id="upiModalFooter">
@@ -268,14 +691,15 @@
     </div>
   </div>
 
-  <!-- 5. Safety Modal -->
-  <div class="modal-overlay" id="sosModal">
+  <!-- 6. Safety & Campus Emergency Helplines Modal -->
+  <div class="modal-overlay" id="sosModal" role="dialog" aria-labelledby="sosModalTitle" aria-modal="true">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>Campus Security & Helplines</h3>
-        <button class="modal-close-btn" data-close-modal="sosModal">&times;</button>
+        <h3 id="sosModalTitle">Campus Safety & Emergency Helplines</h3>
+        <button class="modal-close-btn" data-close-modal="sosModal" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Official emergency hotlines for Harcourt Butler Technical University and Uttar Pradesh state emergency response:</p>
         <div class="emergency-list" id="emergencyContactsList"></div>
       </div>
       <div class="modal-footer">
@@ -284,54 +708,154 @@
     </div>
   </div>
 
-  <!-- 6. Profile Modal -->
-  <div class="modal-overlay" id="profileModal">
-    <div class="modal-dialog">
+  <!-- 7. Auth Modal (Sign Up, Login, Forgot Password) -->
+  <div class="modal-overlay" id="authModal" role="dialog" aria-labelledby="authModalTitle" aria-modal="true">
+    <div class="modal-dialog" style="max-width: 480px;">
       <div class="modal-header">
-        <h3>Student Profile</h3>
-        <button class="modal-close-btn" data-close-modal="profileModal">&times;</button>
+        <h3 id="authModalTitle">Student Authentication</h3>
+        <button class="modal-close-btn" data-close-modal="authModal" aria-label="Close">&times;</button>
       </div>
-      <form id="profileForm">
-        <div class="modal-body">
-          <div class="form-row-2">
-            <div class="form-group">
-              <label>Name</label>
-              <input type="text" id="profNameInput" class="clean-input" required>
-            </div>
-            <div class="form-group">
-              <label>Roll Number</label>
-              <input type="text" id="profRollInput" class="clean-input" required>
-            </div>
-          </div>
-          <div class="form-row-2">
-            <div class="form-group">
-              <label>Branch</label>
-              <input type="text" id="profBranchInput" class="clean-input" required>
-            </div>
-            <div class="form-group">
-              <label>Phone / WhatsApp</label>
-              <input type="tel" id="profPhoneInput" class="clean-input" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>UPI ID (For fare collection)</label>
-            <input type="text" id="profUpiInput" class="clean-input" placeholder="e.g. roll@okaxis">
-          </div>
+      <div class="modal-body">
+        <!-- Auth Tabs -->
+        <div style="display: flex; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1rem;">
+          <button type="button" class="nav-link active" id="tabAuthLogin" style="flex: 1; text-align: center; background: none; border-top: none; border-left: none; border-right: none;">Login</button>
+          <button type="button" class="nav-link" id="tabAuthRegister" style="flex: 1; text-align: center; background: none; border-top: none; border-left: none; border-right: none;">Register</button>
+          <button type="button" class="nav-link" id="tabAuthForgot" style="flex: 1; text-align: center; background: none; border-top: none; border-left: none; border-right: none;">Forgot</button>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" data-close-modal="profileModal">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm">Save</button>
-        </div>
-      </form>
+
+        <!-- Login Form -->
+        <form id="authLoginForm">
+          <div class="form-group" style="margin-bottom: 0.75rem;">
+            <label for="loginIdentifier">Email or Roll Number</label>
+            <input type="text" id="loginIdentifier" class="clean-input" placeholder="e.g. student.2201@hbtu.ac.in or 220104052" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" class="clean-input" placeholder="Enter your account password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="authRegisterForm" style="display: none;">
+          <div class="form-group" style="margin-bottom: 0.65rem;">
+            <label for="regName">Full Name</label>
+            <input type="text" id="regName" class="clean-input" placeholder="e.g. Kavya Sharma" required>
+          </div>
+          <div class="form-row-2" style="margin-bottom: 0.65rem;">
+            <div class="form-group">
+              <label for="regEmail">University Email</label>
+              <input type="email" id="regEmail" class="clean-input" placeholder="roll@hbtu.ac.in" required>
+            </div>
+            <div class="form-group">
+              <label for="regRoll">Roll Number</label>
+              <input type="text" id="regRoll" class="clean-input" placeholder="e.g. 220104052" required>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom: 0.65rem;">
+            <div class="form-group">
+              <label for="regBranch">Branch</label>
+              <input type="text" id="regBranch" class="clean-input" placeholder="e.g. Information Technology" required>
+            </div>
+            <div class="form-group">
+              <label for="regYear">Academic Year</label>
+              <select id="regYear" class="clean-select" required>
+                <option value="1st Year (2028)">1st Year (2028)</option>
+                <option value="2nd Year (2027)">2nd Year (2027)</option>
+                <option value="3rd Year (2026)" selected>3rd Year (2026)</option>
+                <option value="Final Year (2025)">Final Year (2025)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom: 0.65rem;">
+            <div class="form-group">
+              <label for="regHostel">Hostel / Campus</label>
+              <select id="regHostel" class="clean-select" required></select>
+            </div>
+            <div class="form-group">
+              <label for="regGender">Gender</label>
+              <select id="regGender" class="clean-select" required>
+                <option value="F">Female</option>
+                <option value="M">Male</option>
+                <option value="any">Prefer not to say</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom: 0.75rem;">
+            <div class="form-group">
+              <label for="regPhone">Mobile Phone (Private)</label>
+              <input type="tel" id="regPhone" class="clean-input" placeholder="e.g. 9876543210" required>
+            </div>
+            <div class="form-group">
+              <label for="regPassword">Set Password</label>
+              <input type="password" id="regPassword" class="clean-input" placeholder="Minimum 6 characters" minlength="6" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-orange btn-block">Create Student Account</button>
+        </form>
+
+        <!-- Forgot Form -->
+        <form id="authForgotForm" style="display: none;">
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Enter your registered university email to receive account recovery instructions.</p>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="forgotEmail">Student Email</label>
+            <input type="email" id="forgotEmail" class="clean-input" placeholder="e.g. student.2201@hbtu.ac.in" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Send Recovery Link</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-close-modal="authModal">Close</button>
+      </div>
     </div>
   </div>
 
-  <!-- 7. Ticket Modal -->
-  <div class="modal-overlay" id="ticketModal">
-    <div class="modal-dialog">
+  <!-- 8. Student Verification Modal -->
+  <div class="modal-overlay" id="verificationModal" role="dialog" aria-labelledby="verifyModalTitle" aria-modal="true">
+    <div class="modal-dialog" style="max-width: 400px;">
       <div class="modal-header">
-        <h3>Boarding Pass</h3>
-        <button class="modal-close-btn" data-close-modal="ticketModal">&times;</button>
+        <h3 id="verifyModalTitle">Student Account Verification</h3>
+        <button class="modal-close-btn" data-close-modal="verificationModal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🎓</div>
+        <h4 style="font-size: 1.05rem; color: var(--text-heading); margin-bottom: 0.4rem;">Verify Your HBTU Affiliation</h4>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Enter the 4-digit verification code sent to your student email. (Demo Passcode: <strong>1921</strong>)
+        </p>
+        <div style="margin-bottom: 1.25rem;">
+          <input type="text" id="verifyOtpInput" class="clean-input" placeholder="1921" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.3em; font-family: var(--font-mono); width: 160px; margin: 0 auto;" required>
+        </div>
+        <button type="button" class="btn btn-primary btn-block" id="btnSubmitOtp">Verify Student Badge ✓</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-close-modal="verificationModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Student Profile Dashboard Modal -->
+  <div class="modal-overlay" id="profileModal" role="dialog" aria-labelledby="profileModalTitle" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="profileModalTitle">Student Profile & Ride Management</h3>
+        <button class="modal-close-btn" data-close-modal="profileModal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="profileModalBody">
+        <!-- Profile Form & My Rides Tabs rendered via JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-close-modal="profileModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Boarding Pass Modal -->
+  <div class="modal-overlay" id="ticketModal" role="dialog" aria-labelledby="ticketModalTitle" aria-modal="true">
+    <div class="modal-dialog" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="ticketModalTitle">Campus Boarding Pass</h3>
+        <button class="modal-close-btn" data-close-modal="ticketModal" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body" id="ticketModalBody"></div>
       <div class="modal-footer" id="ticketModalFooter">
@@ -340,13 +864,93 @@
     </div>
   </div>
 
-  <!-- Toast Container -->
-  <div class="toast-container" id="toastContainer"></div>
+  <!-- 11. Campus Auto Schedule Submission / Report Modal -->
+  <div class="modal-overlay" id="autoReportModal" role="dialog" aria-labelledby="autoReportTitle" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="autoReportTitle">Report or Update Campus Auto Timetable</h3>
+        <button class="modal-close-btn" data-close-modal="autoReportModal" aria-label="Close">&times;</button>
+      </div>
+      <form id="autoReportForm">
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom: 0.75rem;">
+            <label for="autoRouteTitle">Route Name</label>
+            <input type="text" id="autoRouteTitle" class="clean-input" placeholder="e.g. West Campus Gate ⇄ Rawatpur Station" required>
+          </div>
+          <div class="form-row-2" style="margin-bottom: 0.75rem;">
+            <div class="form-group">
+              <label for="autoPickup">Pickup Gate</label>
+              <input type="text" id="autoPickup" class="clean-input" placeholder="e.g. Awadhpuri Main Gate" required>
+            </div>
+            <div class="form-group">
+              <label for="autoDrop">Drop Point</label>
+              <input type="text" id="autoDrop" class="clean-input" placeholder="e.g. Rawatpur Platform" required>
+            </div>
+          </div>
+          <div class="form-row-2" style="margin-bottom: 0.75rem;">
+            <div class="form-group">
+              <label for="autoHours">Operating Hours</label>
+              <input type="text" id="autoHours" class="clean-input" placeholder="e.g. 7:00 AM – 9:30 PM" required>
+            </div>
+            <div class="form-group">
+              <label for="autoFare">Fare per Student (₹)</label>
+              <input type="text" id="autoFare" class="clean-input" placeholder="e.g. ₹20 per student" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="autoNotes">Additional Details / Stops</label>
+            <textarea id="autoNotes" class="clean-input" style="height: 60px; padding: 0.5rem;" placeholder="e.g. Autos wait at the corner outside DBRA gate. Frequency slows after 8 PM."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-close-modal="autoReportModal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Submit Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-  <!-- Scripts -->
+  <!-- 12. Legal Documents Modal (Privacy Policy, Terms, Guidelines) -->
+  <div class="modal-overlay" id="legalModal" role="dialog" aria-labelledby="legalModalTitle" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="legalModalTitle">Platform Terms & Policies</h3>
+        <button class="modal-close-btn" data-close-modal="legalModal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="legalModalBody" style="font-size: 0.88rem; line-height: 1.6; color: var(--text-muted);"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-close-modal="legalModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. Protected Admin Moderation Portal Modal -->
+  <div class="modal-overlay" id="adminModal" role="dialog" aria-labelledby="adminModalTitle" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="adminModalTitle">HBTU RidePool — Campus Admin Portal 🔒</h3>
+        <button class="modal-close-btn" data-close-modal="adminModal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="adminModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-close-modal="adminModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Script Libraries -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Application Modules -->
   <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/cab-service.js"></script>
-  <script src="js/map-visualizer.js"></script>
+  <script src="js/map-picker.js"></script>
+  <script src="js/pdf-guide.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

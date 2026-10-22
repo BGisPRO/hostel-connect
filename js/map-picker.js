@@ -3,6 +3,7 @@
  * Harcourt Butler Technical University, Kanpur
  * 
  * Complies with OpenStreetMap usage policy (attribution, rate limits, no API keys exposed).
+ * Provides searchable and draggable pins for HBTU hostels, campus gates, railway stations, and airports.
  */
 
 class HBTUMapPicker {
@@ -13,7 +14,6 @@ class HBTUMapPicker {
     this.activeCoords = { lat: 26.4950, lng: 80.3015 }; // Default West Campus
     this.activePlaceName = 'HBTU West Campus (Awadhpuri Gate)';
     this.geocodeTimeout = null;
-    this.isGeocoding = false;
     this.lastGeocodeTime = 0;
     this.minGeocodeInterval = 1200; // 1.2s Nominatim rate limit
   }
@@ -82,20 +82,20 @@ class HBTUMapPicker {
     if (!this.map || typeof L === 'undefined') return;
 
     const keyPoints = [
-      { name: '🏛️ HBTU West Campus (Awadhpuri)', lat: 26.4950, lng: 80.3015, desc: 'DBRA Gate & Boys/Girls Hostels' },
-      { name: '🏛️ HBTU East Campus (Nawabganj)', lat: 26.4862, lng: 80.3160, desc: 'Central Library, Admin & Hostels' },
-      { name: '🚆 Kanpur Central Station (CNB)', lat: 26.4539, lng: 80.3513, desc: 'Platform 1 / Cantt Taxi Stand' },
+      { name: '🏛️ HBTU West Campus (Awadhpuri Gate)', lat: 26.4950, lng: 80.3015, desc: 'DBRA Gate & Hostels' },
+      { name: '🏛️ HBTU East Campus (Central Library Gate)', lat: 26.4862, lng: 80.3160, desc: 'Admin, Library & Hostels' },
+      { name: '🚆 Kanpur Central Station (CNB)', lat: 26.4539, lng: 80.3513, desc: 'Platform 1 Cantt Taxi Stand' },
       { name: '✈️ Lucknow Airport (CCS / LKO)', lat: 26.7606, lng: 80.8893, desc: 'Terminal 3 Departures' },
       { name: '🛫 Kanpur Airport (Chakeri)', lat: 26.4410, lng: 80.4078, desc: 'Domestic Flights Terminal' },
-      { name: '🛍️ Z-Square Mall (Civil Lines)', lat: 26.4710, lng: 80.3530, desc: 'Mall & Multiplex Pickup Gate' }
+      { name: '🛍️ Z-Square Mall (Civil Lines)', lat: 26.4710, lng: 80.3530, desc: 'Civil Lines Entrance Gate' }
     ];
 
     keyPoints.forEach(pt => {
       const landmarkIcon = L.divIcon({
         className: 'landmark-map-dot',
         html: `<div class="landmark-dot-inner" title="${pt.name}"></div>`,
-        iconSize: [14, 14],
-        iconAnchor: [7, 7]
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
       });
 
       const m = L.marker([pt.lat, pt.lng], { icon: landmarkIcon }).addTo(this.map);
@@ -135,7 +135,7 @@ class HBTUMapPicker {
           placeName: this.activePlaceName,
           lat: this.activeCoords.lat,
           lng: this.activeCoords.lng,
-          formattedCoords: `${this.activeCoords.lat.toFixed(4)}, ${this.activeCoords.lng.toFixed(4)}`
+          formattedCoords: `${this.activeCoords.lat.toFixed(4)}° N, ${this.activeCoords.lng.toFixed(4)}° E`
         });
       }
       this.close();
@@ -144,14 +144,14 @@ class HBTUMapPicker {
     // Populate quick presets (West Campus, East Campus, Hostels, Kanpur Central)
     if (presetsContainer && typeof HBTU_HOSTELS !== 'undefined') {
       const topPresets = [
-        { label: '🏛️ West Campus', lat: 26.4950, lng: 80.3015, name: 'HBTU West Campus (Awadhpuri)' },
-        { label: '🏛️ East Campus', lat: 26.4862, lng: 80.3160, name: 'HBTU East Campus (Nawabganj)' },
-        { label: '🏢 Ramanujan Hostel', lat: 26.4950, lng: 80.3015, name: 'Ramanujan Hostel, West Campus' },
-        { label: '🛡️ Alaknanda Hostel', lat: 26.4950, lng: 80.3015, name: 'Alaknanda Hostel, West Campus' },
-        { label: '🏢 Raman Hostel', lat: 26.4862, lng: 80.3160, name: 'Raman Hostel, East Campus' },
-        { label: '🛡️ Gangotri Hostel', lat: 26.4862, lng: 80.3160, name: 'Gangotri Hostel, East Campus' },
+        { label: '🏛️ West Campus', lat: 26.4950, lng: 80.3015, name: 'HBTU West Campus (Awadhpuri Gate)' },
+        { label: '🏛️ East Campus', lat: 26.4862, lng: 80.3160, name: 'HBTU East Campus (Central Library Gate)' },
+        { label: '🏢 Ramanujan Hostel', lat: 26.4952, lng: 80.3018, name: 'Ramanujan Hostel (West Campus)' },
+        { label: '🛡️ Alaknanda Hostel', lat: 26.4938, lng: 80.3022, name: 'Alaknanda Hostel (West Campus)' },
+        { label: '🏢 Raman Hostel', lat: 26.4865, lng: 80.3162, name: 'Raman Hostel (East Campus)' },
+        { label: '🛡️ Gangotri Hostel', lat: 26.4855, lng: 80.3175, name: 'Gangotri Hostel (East Campus)' },
         { label: '🚆 Kanpur Central', lat: 26.4539, lng: 80.3513, name: 'Kanpur Central Railway Station (CNB)' },
-        { label: '✈️ Lucknow Airport', lat: 26.7606, lng: 80.8893, name: 'Lucknow Airport (CCS / LKO)' }
+        { label: '✈️ Lucknow Airport', lat: 26.7606, lng: 80.8893, name: 'Lucknow Airport (CCS / Amausi - LKO)' }
       ];
 
       presetsContainer.innerHTML = topPresets.map(p => `
@@ -202,7 +202,7 @@ class HBTUMapPicker {
     const delay = elapsed < this.minGeocodeInterval ? (this.minGeocodeInterval - elapsed) : 300;
 
     const statusEl = document.getElementById('mapGeocodeStatus');
-    if (statusEl) statusEl.textContent = 'Identifying place name via OpenStreetMap...';
+    if (statusEl) statusEl.textContent = 'Resolving location via OpenStreetMap...';
 
     this.geocodeTimeout = setTimeout(() => {
       this.executeReverseGeocode(lat, lng);
@@ -213,7 +213,7 @@ class HBTUMapPicker {
     const statusEl = document.getElementById('mapGeocodeStatus');
     this.lastGeocodeTime = Date.now();
 
-    // Check if close to known campus points first (0.003 deg ~ 300 meters)
+    // Check if close to known campus points first (~300 meters)
     const known = this.findNearestKnownLandmark(lat, lng);
     if (known) {
       this.activePlaceName = known.name;
@@ -223,7 +223,6 @@ class HBTUMapPicker {
     }
 
     try {
-      // Nominatim reverse geocode with proper User-Agent header
       const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
       const res = await fetch(url, {
         headers: { 'Accept': 'application/json' }
@@ -233,18 +232,15 @@ class HBTUMapPicker {
       const data = await res.json();
 
       if (data && data.display_name) {
-        // Construct concise readable place name
         const parts = data.display_name.split(',');
         const shortName = parts.slice(0, 3).join(',').trim();
         this.activePlaceName = shortName;
         if (statusEl) statusEl.textContent = '✓ Location identified';
       } else {
-        this.activePlaceName = `Selected Spot (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+        this.activePlaceName = `Custom Spot (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
         if (statusEl) statusEl.textContent = 'Custom coordinates pin selected';
       }
     } catch (err) {
-      console.warn('Nominatim reverse geocode fallback:', err);
-      // Fallback gracefully without breaking UI
       const nearest = this.findNearestKnownLandmark(lat, lng, 0.05);
       if (nearest) {
         this.activePlaceName = `${nearest.name} Area (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
@@ -264,9 +260,12 @@ class HBTUMapPicker {
     // 1. Check local hostels and campus list first
     const qLower = query.toLowerCase();
     if (typeof HBTU_HOSTELS !== 'undefined') {
-      const matchHostel = HBTU_HOSTELS.find(h => h.name.toLowerCase().includes(qLower));
+      const matchHostel = HBTU_HOSTELS.find(h => 
+        h.name.toLowerCase().includes(qLower) || 
+        (h.aliases && h.aliases.some(a => a.toLowerCase().includes(qLower)))
+      );
       if (matchHostel) {
-        this.setCoordinates(matchHostel.lat, matchHostel.lng, `${matchHostel.name}, ${matchHostel.campus}`, true);
+        this.setCoordinates(matchHostel.lat, matchHostel.lng, `${matchHostel.name} (${matchHostel.campus.split(' ')[0]})`, true);
         if (statusEl) statusEl.textContent = `✓ Found ${matchHostel.name}`;
         return;
       }
@@ -274,7 +273,7 @@ class HBTUMapPicker {
 
     // 2. Query Nominatim with rate limiting
     try {
-      const boundedQuery = query.includes('Kanpur') || query.includes('Lucknow') ? query : `${query}, Kanpur, Uttar Pradesh`;
+      const boundedQuery = query.toLowerCase().includes('kanpur') || query.toLowerCase().includes('lucknow') ? query : `${query}, Kanpur, Uttar Pradesh`;
       const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(boundedQuery)}&limit=1`;
       const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
       const results = await res.json();
@@ -288,7 +287,7 @@ class HBTUMapPicker {
         this.setCoordinates(lat, lng, shortName, true);
         if (statusEl) statusEl.textContent = `✓ Found: ${shortName}`;
       } else {
-        if (statusEl) statusEl.textContent = `No matches found for "${query}". Drag pin manually.`;
+        if (statusEl) statusEl.textContent = `No matches found for "${query}". Drag pin manually on map.`;
       }
     } catch (err) {
       if (statusEl) statusEl.textContent = `Search server busy. Drag marker on map.`;
@@ -325,7 +324,7 @@ class HBTUMapPicker {
     const placeEl = document.getElementById('mapSelectedPlaceName');
 
     if (coordsEl) {
-      coordsEl.textContent = `${this.activeCoords.lat.toFixed(5)}° N, ${this.activeCoords.lng.toFixed(5)}° E`;
+      coordsEl.textContent = `${this.activeCoords.lat.toFixed(4)}° N, ${this.activeCoords.lng.toFixed(4)}° E`;
     }
     if (placeEl && !onlyCoords) {
       placeEl.textContent = this.activePlaceName || 'Selected Location';
@@ -345,17 +344,14 @@ class HBTUMapPicker {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // Ensure Leaflet is loaded
     this.init();
 
-    // Set initial coordinates if provided
     if (options.initialCoords) {
       this.setCoordinates(options.initialCoords.lat, options.initialCoords.lng, options.initialName, true);
     } else if (options.initialName) {
       this.searchLocation(options.initialName);
     }
 
-    // Leaflet needs invalidateSize() after modal animation
     setTimeout(() => {
       if (this.map) {
         this.map.invalidateSize();
